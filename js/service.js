@@ -48,25 +48,7 @@ function createMeme(id) {
     gMeme = {
         selectedImgId: id,
         selectedLineIdx: 0,
-        lines: [{
-            txt: 'I never eat Falafel',
-            size: 20,
-            font: 'Impact',
-            align: 'left',
-            color: 'black',
-            fill: 'white',
-            x: 30,
-            y: 30
-        }, {
-            txt: 'I never eat Falafel',
-            size: 20,
-            font: 'Impact',
-            align: 'left',
-            color: 'black',
-            fill: 'white',
-            x: 30,
-            y: 80
-        }]
+        lines: []
     }
 }
 
@@ -142,13 +124,6 @@ function highliteSelectedLine() {
     var line = gMeme.lines[gMeme.selectedLineIdx]
     drawRect(line.x, line.y, line.width, line.height)
 }
-
-// function saveMeme() {
-//     var memes = getFromStorage(KEY)
-//     console.log('meme now is:', memes)
-//     if (!memes) setToStorage(KEY, [gMeme])
-//     else pushToStorage(KEY, gMeme)
-// }
 
 function saveMeme() {
     var imgMemes = getFromStorage(IMGKEY)

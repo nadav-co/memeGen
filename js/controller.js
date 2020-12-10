@@ -25,12 +25,10 @@ function renderMemes() {
     var elContainer = document.querySelector('.memes-container')
     elContainer.innerHTML = ''
     var memes = getImgMemes()
-    console.log(memes)
     if (!memes || !memes.length) return
     var txtHTMLs = memes.map((meme, idx) => {
         return `<img src="data:image/jpeg, ${meme}" class="img-${idx}" onclick="editMeme(${idx})" >\n`
     })
-    console.log(txtHTMLs)
     elContainer.innerHTML = txtHTMLs.join('')
 }
 
@@ -78,8 +76,7 @@ function renderCanvas(meme = null) {
     drawImg(meme)
 }
 
-function drawImg(meme) {
-    // todo - resizecanvas
+function drawImg(meme, isMarkOff = false) {
     var id = meme.selectedImgId
     var img = new Image();
     img.src = getImgById(id).url
@@ -93,7 +90,8 @@ function drawImg(meme) {
         meme.lines.forEach(line => drawText(line))
         var elLineSpan = document.querySelector('.line-number')
         elLineSpan.innerText = getLineNum()
-        if (meme.selectedLineIdx !== null && meme.lines.length) highliteSelectedLine()
+        if (meme.selectedLineIdx !== null && meme.lines.length && !isMarkOff) highliteSelectedLine()
+
     }
 }
 
@@ -213,5 +211,6 @@ function onGoTo(section, ev = null) {
 }
 
 function onDownload(elLink) {
+    drawImg(getCurrMeme(), true)
     downloadImg(elLink)
 }
