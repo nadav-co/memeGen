@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>meme maker</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body onload="init()">
+    <header class="flex space-between">
+        <img src="./icons/LOGO.png" alt="">
+        <ul class="navbar clean-list flex center">
+            <button class="btn-clean" onclick="onToggleMenu()">x</button>
+            <li class="flex"><a onclick="onGoTo('.memes', event)" class="flex center" href="">Memes</a></li>
+            <li class="flex"><a onclick="onGoTo('.gallery', event)" class="flex center" href="">Gallery</a></li>
+            <li class="flex"><a onclick="onGoTo('.about', event)" class="flex center" href="">About</a></li>
+        </ul>
+        <img onclick="onToggleMenu()" class="menu-btn" src="./icons/Shape-menu.svg" alt="">
+    </header>
+
+    <div class="bgc-container" hidden></div>
+
+    <section class="gallery main-layout">
+        <div class="gallery-search main-layout"><input onkeyup="onSearch(this)" type="text" placeholder="Search" list="search"></div>
+
+        <datalist id="search">
+    <option value="happy">
+    <option value="sad">
+    <option value="women">
+    <option value="man">
+    <option value="laugh">
+  </datalist>
+
+        <div class="img-container flex center"></div>
+    </section>
+    <section class="about"></section>
+    <section class="memes" hidden>
+        <div class="memes-container"></div>
+    </section>
+    <section class="editor-container" hidden>
+        <button onclick="onBackToGallery()" class="back-to-gallery">Back to Gallery</button>
+        <div class="main-content flex">
+            <div class="canvas-container flex">
+                <canvas onmousedown="onCanvasClicked(event)" onmousemove="onCanvasClicked(event)" onmouseup="onCanvasClicked(event)" height="400px" width="400px"></canvas>
+            </div>
+
+            <div class="control-box flex col center">
+                <h4 class="flex space-between"><span>Edit Text Lines</span>
+                    <small>
+                        <span class="line-number"></span>
+                        <button onclick="onChangeLine()" class="btn-clean switch-line"></button>
+                        <button onclick="onAddLine()" class="btn-clean add-line"></button>
+                        <button onclick="onDelete()" class="btn-clean delete-line"></button>
+                    </small>
+                </h4>
+                <div class="actions flex col space-between">
+                    <div class="move-text flex center">
+                        <button onclick="onChangeYPos(-10)">↑</button>
+                        <button onclick="onChangeYPos(10)">↓</button>
+                    </div>
+                    <div class="actions-layout flex col">
+                        <div class="select"><label for="fontStyle" hidden>font-style</label>
+                            <select onchange="onSetFont(this)" name="font-style" id="fontStyle" aria-placeholder="Impact">
+                        <option value="Impact">Impact</option>
+                        <option value="Ariel">Ariel</option>
+                        <option value="Segoe UI">Segoe UI</option>
+                        <option value="Verdana">Verdana</option>
+                    </select></div>
+
+                        <div class="main-actions flex space-between"><button onclick="onChangeSize(-1)" class="btn-clean text-size-down"></button>
+                            <button onclick="onChangeSize(1)" class="btn-clean text-size-up"></button>
+                            <div class="alignment">
+                                <button class="btn-clean text-align-left"></button>
+                                <button class="btn-clean text-align-center"></button>
+                                <button class="btn-clean text-align-right"></button>
+                            </div>
+
+                            <input class="btn-clean line-color" onchange="onChangeColor(this)" type="color" id="lineColor">
+                            <input class="btn-clean fill-color" onchange="onChangeFill(this)" type="color" id="fillColor">
+                        </div>
+                    </div>
+
+
+                    <div class="text-input"><input type="text" class="content-input" placeholder="input sentence"></div>
+                    <div class="emoji-container flex col">
+                        <div class="flex space-between"><span>😘</span>
+                            <span onclick="onAddLine('❤️')">❤️</span>
+                            <span onclick="onAddLine('😅')">😅</span>
+                            <span onclick="onAddLine('😭')">😭</span>
+                            <span onclick="onAddLine('🙏')">🙏</span>
+                            <span onclick="onAddLine('😄')">😄</span>
+                            <span onclick="onAddLine('😍')">😍</span>
+                            <span onclick="onAddLine('😓')">😓</span>
+                            <span onclick="onAddLine('🙄')">🙄</span>
+                            <span onclick="onAddLine('🖕')">🖕</span>
+                            <span onclick="onAddLine('😎')">😎</span>
+                            <span onclick="onAddLine('😂')">😂</span>
+                            <span onclick="onAddLine('🤬')">🤬</span>
+                            <span onclick="onAddLine('👺')">👺</span>
+                        </div>
+                        <div class="flex space-between">
+                            <span onclick="onAddLine('😕')">😕</span>
+                            <span onclick="onAddLine('😊')">😊</span>
+                            <span onclick="onAddLine('🥳')">🥳</span>
+                            <span onclick="onAddLine('😒')">😒</span>
+                            <span onclick="onAddLine('💡')">💡</span>
+                            <span onclick="onAddLine('😢')">😢</span>
+                            <span onclick="onAddLine('👆')">👆</span>
+                            <span onclick="onAddLine('👌')">👌</span>
+                            <span onclick="onAddLine('😥')">😥</span>
+                            <span onclick="onAddLine('💣')">💣</span>
+                            <span onclick="onAddLine('🤧')">🤧</span>
+                            <span onclick="onAddLine('🤦‍♂️')">🤦‍♂️</span>
+                            <span onclick="onAddLine('😷')">😷</span>
+                            <span onclick="onAddLine('🔥')">🔥</span>
+                        </div>
+                    </div>
+                    <div onclick="onSaveMeme()" class="meme-btns"><button class="save-meme">Save</button>
+                        <button class="share-meme">Share</button></div>
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <script src="js/storage-service.js"></script>
+    <script src="js/service.js"></script>
+    <script src="js/controller.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
