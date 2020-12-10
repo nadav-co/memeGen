@@ -225,6 +225,16 @@
         border-radius: 2em;
         background-color: #FF9826;
         color: #fff;
+        font-size: 1rem;
+        font-weight: 500;
+        text-decoration: none;
+    }
+    
+    .meme-btns li>* {
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 500;
+        text-decoration: none;
     }
     
     .switch-line {

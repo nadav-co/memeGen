@@ -35,7 +35,10 @@
 
         <div class="img-container flex center"></div>
     </section>
-    <section class="about"></section>
+    <section class="about">
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam corrupti qui fuga! Pariatur, officia et neque id, sed vel incidunt labore dicta iste expedita iure nam velit perspiciatis nostrum dolor.
+        </p>
+    </section>
     <section class="memes" hidden>
         <div class="memes-container"></div>
     </section>
@@ -117,8 +120,11 @@
                             <span onclick="onAddLine('🔥')">🔥</span>
                         </div>
                     </div>
-                    <div onclick="onSaveMeme()" class="meme-btns"><button class="save-meme">Save</button>
-                        <a href="#" class="share-meme" onclick="onDownload(this)" download="meme.jpeg">Download</button></div>
+                    <ul class="meme-btns clean-list flex space-between">
+                        <li class="save-meme flex center"><a href="#" onclick="onSaveMeme()">Save</a></li>
+                        <li class="share-meme flex center"><a href="#" onclick="onDownload(this)" download="meme.jpeg">Download</a></li>
+
+                    </ul>
 
 
 
