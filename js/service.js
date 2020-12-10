@@ -1,6 +1,7 @@
 'use strict'
 
 const KEY = 'savedMemes'
+const IMGKEY = 'savedImgs'
 var gKeywords = { 'happy': 12, 'funny puk': 1 }
 var gImgs = [
     { id: 1, url: 'meme-imgs/1.jpg', keywords: ['happy'] },
@@ -142,11 +143,31 @@ function highliteSelectedLine() {
     drawRect(line.x, line.y, line.width, line.height)
 }
 
+// function saveMeme() {
+//     var memes = getFromStorage(KEY)
+//     console.log('meme now is:', memes)
+//     if (!memes) setToStorage(KEY, [gMeme])
+//     else pushToStorage(KEY, gMeme)
+// }
+
 function saveMeme() {
+    var imgMemes = getFromStorage(IMGKEY)
+    var meme = gCanvas.toDataURL('image/jpeg');
+    if (!imgMemes) setToStorage(IMGKEY, [meme])
+    else pushToStorage(IMGKEY, meme)
+
     var memes = getFromStorage(KEY)
-    console.log('meme now is:', memes)
     if (!memes) setToStorage(KEY, [gMeme])
     else pushToStorage(KEY, gMeme)
+}
+
+function downloadImg(elLink) {
+    var imgContent = gCanvas.toDataURL('image/jpeg');
+    elLink.href = imgContent
+}
+
+function getImgMemes() {
+    return getFromStorage(IMGKEY)
 }
 
 function getMemes() {

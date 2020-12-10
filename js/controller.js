@@ -22,30 +22,35 @@ function renderImages(key = null) {
 }
 
 function renderMemes() {
-    document.querySelector('.memes-container').innerHTML = ''
-    var memes = getMemes()
+    var elContainer = document.querySelector('.memes-container')
+    elContainer.innerHTML = ''
+    var memes = getImgMemes()
     console.log(memes)
     if (!memes || !memes.length) return
-    memes.forEach((meme, idx) => renderMeme(meme, idx))
+    var txtHTMLs = memes.map((meme, idx) => {
+        return `<img src="data:image/jpeg, ${meme}" class="img-${idx}" onclick="editMeme(${idx})" >\n`
+    })
+    console.log(txtHTMLs)
+    elContainer.innerHTML = txtHTMLs.join('')
 }
 
-function renderMeme(meme, idx) {
-    var elContainer = document.querySelector('.memes-container')
-    elContainer.innerHTML += `<canvas class="canvas-${idx}" onclick="editMeme(${idx})" height="150px" width="150px"></canvas>`
-    let canvas = document.querySelector(`.canvas-${idx}`)
-    let ctx = canvas.getContext('2d')
-    var id = meme.selectedImgId
-    var img = new Image();
-    img.src = getImgById(id).url
-    img.onload = () => {
-        canvas.width = 150
-        gCanvas.height = 150
-        meme.offsetX = canvas.offsetLeft
-        meme.offsetY = canvas.offsetTop
-        ctx.drawImage(img, 0, 0, 150, 150)
-        meme.lines.forEach(line => drawText(line))
-    }
-}
+// function renderMeme(meme, idx) {
+//     var elContainer = document.querySelector('.memes-container')
+//     elContainer.innerHTML += `<canvas class="canvas-${idx}" onclick="editMeme(${idx})" height="150px" width="150px"></canvas>`
+//     let canvas = document.querySelector(`.canvas-${idx}`)
+//     let ctx = canvas.getContext('2d')
+//     var id = meme.selectedImgId
+//     var img = new Image();
+//     img.src = getImgById(id).url
+//     img.onload = () => {
+//         canvas.width = 150
+//         gCanvas.height = 150
+//         meme.offsetX = canvas.offsetLeft
+//         meme.offsetY = canvas.offsetTop
+//         ctx.drawImage(img, 0, 0, 150, 150)
+//         meme.lines.forEach(line => drawText(line))
+//     }
+// }
 
 function editMeme(idx) {
     document.querySelector('.gallery').hidden = true
@@ -205,4 +210,8 @@ function onGoTo(section, ev = null) {
     document.querySelector('.editor-container').hidden = true
     document.querySelector(section).hidden = false
     if (section === '.memes') renderMemes()
+}
+
+function onDownload(elLink) {
+    downloadImg(elLink)
 }
