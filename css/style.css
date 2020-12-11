@@ -357,6 +357,12 @@
             background-color: #E5E5E5;
             font-size: 1.5rem;
         }
+        button.back-to-gallery {
+            display: block;
+            width: 200px;
+            text-align: left;
+            padding-left: 25px;
+        }
         .actions .select {
             width: 50%;
         }

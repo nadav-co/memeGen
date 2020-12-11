@@ -11,6 +11,10 @@ function init() {
     gCtx = gCanvas.getContext('2d')
     renderImages()
     renderMemes()
+    var hammCanv = new Hammer(gCanvas)
+    hammCanv.on('pan', onCanvasTouched)
+    hammCanv.get('pan').set({ direction: Hammer.DIRECTION_ALL })
+    hammCanv.on('pinch', onCanvasPinch)
 }
 
 
@@ -50,9 +54,20 @@ function renderMemes() {
 //     }
 // }
 
+function editImg(id) {
+    document.querySelector('.gallery').hidden = true
+    document.querySelector('.memes').hidden = true
+    document.querySelector('.about').hidden = true
+    createMeme(id)
+    renderCanvas()
+    document.querySelector('.editor-container').hidden = false
+    document.querySelector('.bgc-container').hidden = false
+}
+
 function editMeme(idx) {
     document.querySelector('.gallery').hidden = true
     document.querySelector('.memes').hidden = true
+    document.querySelector('.about').hidden = true
     var meme = getMemes()[idx]
     renderCanvas(meme)
     document.querySelector('.editor-container').hidden = false
@@ -60,15 +75,6 @@ function editMeme(idx) {
 
 }
 
-function editImg(id) {
-    document.querySelector('.gallery').hidden = true
-    document.querySelector('.memes').hidden = true
-    createMeme(id)
-    renderCanvas()
-    document.querySelector('.editor-container').hidden = false
-    document.querySelector('.bgc-container').hidden = false
-
-}
 
 function renderCanvas(meme = null) {
     if (!meme) meme = getCurrMeme()
@@ -108,8 +114,8 @@ function drawText(line) {
 }
 
 function onBackToGallery() {
-    document.querySelector('.gallery').hidden = false
-    document.querySelector('.editor-container').hidden = true
+    var isconfirmed = confirm('discard changes?')
+    if (isconfirmed) onGoTo('.gallery')
 }
 
 function onChangeLine() {
@@ -182,6 +188,26 @@ function onCanvasClicked(ev) {
     }
 }
 
+function onCanvasTouched(ev) {
+    ev.preventDefault()
+    var { x, y } = ev.center
+    var line = setClickedLine(x, y, true)
+    if (line) {
+        console.log(line)
+        changeXPos(ev.changedPointers[0].movementX)
+        changeYPos(ev.changedPointers[0].movementY)
+        renderCanvas()
+    }
+}
+
+function onCanvasPinch(ev) {
+    var diffX = ev.changedPointers[0].movementX + ev.changedPointers[1].movementX
+    var diffY = ev.changedPointers[0].movementY + ev.changedPointers[1].movementY
+    var diff = (diffX + diffY) / 2
+    onChangeSize(diff)
+
+}
+
 function drawRect(x, y, width, height) {
     gCtx.beginPath()
     gCtx.strokeStyle = 'white'
@@ -200,9 +226,10 @@ function onSaveMeme() {
 }
 
 function onGoTo(section, ev = null) {
-    ev.preventDefault()
+    if (ev) ev.preventDefault()
     document.querySelector('.navbar').classList.remove('open')
     document.querySelector('.gallery').hidden = true
+    document.querySelector('.about').hidden = true
     document.querySelector('.bgc-container').hidden = true
     document.querySelector('.memes').hidden = true
     document.querySelector('.editor-container').hidden = true

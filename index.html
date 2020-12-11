@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>meme maker</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="./icons/favicon.ico" type="image/x-icon">
 </head>
 
 <body onload="init()">
@@ -35,13 +36,14 @@
 
         <div class="img-container flex center"></div>
     </section>
-    <section class="about">
+    <section class="about" hidden>
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nihil vel, temporibus ea distinctio, nisi, perspiciatis tempore iste dignissimos tempora facere possimus. Officiis consequuntur culpa molestiae labore accusamus natus expedita eaque.</p>
     </section>
     <section class="memes" hidden>
         <div class="memes-container"></div>
     </section>
     <section class="editor-container" hidden>
-        <button onclick="onBackToGallery()" class="back-to-gallery">Back to Gallery</button>
+        <button onclick="onBackToGallery()" class="back-to-gallery btn-clean">&#x3c; Back to Gallery</button>
         <div class="main-content flex">
             <div class="canvas-container flex">
                 <canvas onmousedown="onCanvasClicked(event)" onmousemove="onCanvasClicked(event)" onmouseup="onCanvasClicked(event)" height="400px" width="400px"></canvas>
@@ -134,6 +136,7 @@
 
     </section>
 
+    <script src="js/hammer.js"></script>
     <script src="js/storage-service.js"></script>
     <script src="js/service.js"></script>
     <script src="js/controller.js"></script>

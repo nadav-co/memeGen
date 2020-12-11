@@ -102,14 +102,18 @@ function changeFill(color) {
 }
 
 function changeYPos(diff) {
-    gMeme.lines[gMeme.selectedLineIdx].y += diff
+    if (gMeme.lines.length) gMeme.lines[gMeme.selectedLineIdx].y += diff
 }
 
 function changeXPos(diff) {
-    gMeme.lines[gMeme.selectedLineIdx].x += diff
+    if (gMeme.lines.length) gMeme.lines[gMeme.selectedLineIdx].x += diff
 }
 
-function setClickedLine(x, y) {
+function setClickedLine(x, y, touch = false) {
+    if (touch) {
+        x -= gMeme.offsetX
+        y -= gMeme.offsetY
+    }
     var line = gMeme.lines.find(line => {
         return x >= line.x && x <= line.x + line.width &&
             y >= line.y - line.height && y < line.y
