@@ -4,24 +4,24 @@ const KEY = 'savedMemes'
 const IMGKEY = 'savedImgs'
 var gKeywords = { 'happy': 12, 'funny puk': 1 }
 var gImgs = [
-    { id: 1, url: 'meme-imgs/1.jpg', keywords: ['happy'] },
-    { id: 2, url: 'meme-imgs/2.jpg', keywords: ['happy'] },
-    { id: 3, url: 'meme-imgs/3.jpg', keywords: ['happy'] },
-    { id: 4, url: 'meme-imgs/4.jpg', keywords: ['happy'] },
-    { id: 5, url: 'meme-imgs/5.jpg', keywords: ['happy'] },
-    { id: 6, url: 'meme-imgs/6.jpg', keywords: ['happy'] },
-    { id: 7, url: 'meme-imgs/7.jpg', keywords: ['happy'] },
-    { id: 8, url: 'meme-imgs/8.jpg', keywords: ['happy'] },
-    { id: 9, url: 'meme-imgs/9.jpg', keywords: ['happy'] },
-    { id: 10, url: 'meme-imgs/10.jpg', keywords: ['happy'] },
-    { id: 11, url: 'meme-imgs/11.jpg', keywords: ['happy'] },
-    { id: 12, url: 'meme-imgs/12.jpg', keywords: ['happy'] },
-    { id: 13, url: 'meme-imgs/13.jpg', keywords: ['happy'] },
-    { id: 14, url: 'meme-imgs/14.jpg', keywords: ['happy'] },
-    { id: 15, url: 'meme-imgs/15.jpg', keywords: ['happy'] },
-    { id: 16, url: 'meme-imgs/16.jpg', keywords: ['happy'] },
-    { id: 17, url: 'meme-imgs/17.jpg', keywords: ['happy'] },
-    { id: 18, url: 'meme-imgs/18.jpg', keywords: ['sad'] }
+    { id: 1, url: 'meme-imgs/1.jpg', keywords: ['ALL', 'funny', 'laugh', 'man'] },
+    { id: 2, url: 'meme-imgs/2.jpg', keywords: ['ALL', 'happy', 'animals', 'dogs'] },
+    { id: 3, url: 'meme-imgs/3.jpg', keywords: ['ALL', 'happy', 'baby', 'dogs'] },
+    { id: 4, url: 'meme-imgs/4.jpg', keywords: ['ALL', 'cat', 'sleepy'] },
+    { id: 5, url: 'meme-imgs/5.jpg', keywords: ['ALL', 'baby'] },
+    { id: 6, url: 'meme-imgs/6.jpg', keywords: ['ALL', 'happy', 'man'] },
+    { id: 7, url: 'meme-imgs/7.jpg', keywords: ['ALL', 'happy', 'baby'] },
+    { id: 8, url: 'meme-imgs/8.jpg', keywords: ['ALL', 'happy'] },
+    { id: 9, url: 'meme-imgs/9.jpg', keywords: ['ALL', 'happy'] },
+    { id: 10, url: 'meme-imgs/10.jpg', keywords: ['ALL', 'happy'] },
+    { id: 11, url: 'meme-imgs/11.jpg', keywords: ['ALL', 'happy'] },
+    { id: 12, url: 'meme-imgs/12.jpg', keywords: ['ALL', 'happy'] },
+    { id: 13, url: 'meme-imgs/13.jpg', keywords: ['ALL', 'happy'] },
+    { id: 14, url: 'meme-imgs/14.jpg', keywords: ['ALL', 'happy'] },
+    { id: 15, url: 'meme-imgs/15.jpg', keywords: ['ALL', 'happy'] },
+    { id: 16, url: 'meme-imgs/16.jpg', keywords: ['ALL', 'happy'] },
+    { id: 17, url: 'meme-imgs/17.jpg', keywords: ['ALL', 'happy'] },
+    { id: 18, url: 'meme-imgs/18.jpg', keywords: ['ALL', 'sad'] }
 ];
 var gMeme = {
     selectedImgId: 5,
@@ -32,6 +32,18 @@ var gMeme = {
         align: 'left',
         color: 'red'
     }]
+}
+
+function getSearchKeys() {
+    var keys = gImgs.map(img => img.keywords.map((key) => key))
+    var newKeys = []
+    keys.forEach(keyArr => newKeys.push(...keyArr))
+
+    var filtKeys = [...new Set(newKeys)]
+    var keysMap = {}
+    filtKeys.forEach(key => keysMap[key] = getRandomInt(1, 30))
+    keysMap.ALL = 40
+    return keysMap
 }
 
 function getImagesToRender(key) {
@@ -52,6 +64,14 @@ function createMeme(id) {
     }
 }
 
+function createMemeFromImg(img) {
+    var url = img.currentSrc
+    gImgs.push({ id: gImgs.length + 1, url, keywords: [] })
+    createMeme(gImgs.length)
+    console.log(gImgs)
+}
+
+
 function getCurrMeme() {
     return gMeme
 }
@@ -71,7 +91,7 @@ function getLineNum() {
 }
 
 function addLine(txt, color, fill) {
-    gMeme.lines.push({ txt, size: 30, align: 'left', font: 'Impact', color, fill, x: 30, y: 30 })
+    gMeme.lines.push({ txt, size: 30, align: 'left', isAligned: true, font: 'Impact', color, fill, x: 30, y: 30 })
     gMeme.selectedLineIdx = gMeme.lines.length - 1
 }
 
@@ -106,7 +126,11 @@ function changeYPos(diff) {
 }
 
 function changeXPos(diff) {
-    if (gMeme.lines.length) gMeme.lines[gMeme.selectedLineIdx].x += diff
+    if (gMeme.lines.length) {
+        gMeme.lines[gMeme.selectedLineIdx].isAligned = false
+        gMeme.lines[gMeme.selectedLineIdx].align = 'left'
+        gMeme.lines[gMeme.selectedLineIdx].x += diff
+    }
 }
 
 function setClickedLine(x, y, touch = false) {
@@ -114,9 +138,16 @@ function setClickedLine(x, y, touch = false) {
         x -= gMeme.offsetX
         y -= gMeme.offsetY
     }
-    var line = gMeme.lines.find(line => {
-        return x >= line.x && x <= line.x + line.width &&
-            y >= line.y - line.height && y < line.y
+    const line = gMeme.lines.find(line => {
+        switch (line.align) {
+            case 'left':
+                return x >= line.x && x <= line.x + line.width && y >= line.y - line.height && y < line.y
+            case 'center':
+                return x >= line.x - line.width / 2 && x <= line.x + line.width / 2 && y >= line.y - line.height && y < line.y
+            case 'right':
+                return x >= line.x - line.width && x <= line.x && y >= line.y - line.height && y < line.y
+        }
+        return x >= line.x && x <= line.x + line.width && y >= line.y - line.height && y < line.y
     })
     if (line === undefined) return false
     var idx = gMeme.lines.indexOf(line)
@@ -126,7 +157,21 @@ function setClickedLine(x, y, touch = false) {
 
 function highliteSelectedLine() {
     var line = gMeme.lines[gMeme.selectedLineIdx]
-    drawRect(line.x, line.y, line.width, line.height)
+    if (!line.isAligned) {
+        drawRect(line.x, line.y, line.width, line.height)
+        return
+    }
+    switch (line.align) {
+        case 'left':
+            drawRect(line.x, line.y, line.width, line.height)
+            break
+        case 'center':
+            drawRect((gCanvas.width / 2 - line.width / 2), line.y, line.width, line.height)
+            break
+        case 'right':
+            drawRect(gCanvas.width - 20 - line.width, line.y, line.width, line.height)
+            break
+    }
 }
 
 function saveMeme() {
@@ -155,4 +200,15 @@ function getMemes() {
 
 function setMeme(meme) {
     gMeme = meme
+}
+
+function align(alignTo) {
+    var line = gMeme.lines[gMeme.selectedLineIdx]
+    line.isAligned = true
+    line.align = alignTo
+    line.x = (alignTo === 'left') ? 20 : (alignTo === 'right') ? gCanvas.width - 20 : gCanvas.width / 2
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
 }

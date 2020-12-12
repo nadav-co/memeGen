@@ -3,6 +3,8 @@
 var gCanvas
 var gCtx
 var gMouseDown = false
+var gTapedLineIdx
+var gkeysMap
 
 
 
@@ -11,12 +13,29 @@ function init() {
     gCtx = gCanvas.getContext('2d')
     renderImages()
     renderMemes()
+    gkeysMap = getSearchKeys()
+    renderSearchBy()
     var hammCanv = new Hammer(gCanvas)
-    hammCanv.on('pan', onCanvasTouched)
+    hammCanv.on('pan', onTextPan)
     hammCanv.get('pan').set({ direction: Hammer.DIRECTION_ALL })
+    hammCanv.add(new Hammer.Press({ event: 'press', time: 50 }))
+    hammCanv.on('press', onTextPress)
     hammCanv.on('pinch', onCanvasPinch)
+    hammCanv.get('pinch').set({ enable: true });
+    var hammBody = new Hammer(document.body)
+    hammBody.add(new Hammer.Tap({ event: 'dubleTap', taps: 2 }))
+    hammBody.on("dubleTap", ev => ev.preventDefault())
+
 }
 
+function renderSearchBy() {
+    var txtHTMls = ''
+    var i = 0
+    for (var key in gkeysMap) {
+        txtHTMls += `<span onclick="onSearchByKey(this)" class="key-${i}" style="font-size:calc(1rem + ${gkeysMap[key]}px)">${key}</span>`
+    }
+    document.querySelector('.search-by').innerHTML = txtHTMls
+}
 
 function renderImages(key = null) {
     var imgs = getImagesToRender(key)
@@ -27,11 +46,10 @@ function renderImages(key = null) {
 
 function renderMemes() {
     var elContainer = document.querySelector('.memes-container')
-    elContainer.innerHTML = ''
     var memes = getImgMemes()
     if (!memes || !memes.length) return
     var txtHTMLs = memes.map((meme, idx) => {
-        return `<img src="data:image/jpeg, ${meme}" class="img-${idx}" onclick="editMeme(${idx})" >\n`
+        return `<img src="${meme}" class="img-${idx}" onclick="editMeme(${idx})" >\n`
     })
     elContainer.innerHTML = txtHTMLs.join('')
 }
@@ -58,7 +76,8 @@ function editImg(id) {
     document.querySelector('.gallery').hidden = true
     document.querySelector('.memes').hidden = true
     document.querySelector('.about').hidden = true
-    createMeme(id)
+    if (typeof(id) === 'number') createMeme(id)
+    else createMemeFromImg(id)
     renderCanvas()
     document.querySelector('.editor-container').hidden = false
     document.querySelector('.bgc-container').hidden = false
@@ -172,38 +191,45 @@ function onSearch(elinput) {
 }
 
 function onCanvasClicked(ev) {
-    if (ev.type === 'mousedown') {
-        gMouseDown = true
-        var isLine = setClickedLine(ev.offsetX, ev.offsetY)
-        if (!isLine) gMouseDown = false
+    return
+    //     if (ev.type === 'mousedown') {
+    //         gMouseDown = true
+    //         var isLine = setClickedLine(ev.offsetX, ev.offsetY)
+    //         if (!isLine) gMouseDown = false
 
-    }
-    if (ev.type === 'mouseup') {
-        gMouseDown = false
-    }
-    if (gMouseDown) {
-        changeXPos(ev.movementX)
-        changeYPos(ev.movementY)
-        renderCanvas()
-    }
+    //     }
+    //     if (ev.type === 'mouseup') {
+    //         gMouseDown = false
+    //     }
+    //     if (gMouseDown) {
+    //         changeXPos(ev.movementX)
+    //         changeYPos(ev.movementY)
+    //         renderCanvas()
+    //     }
 }
 
-function onCanvasTouched(ev) {
+function onTextPan(ev) {
     ev.preventDefault()
-    var { x, y } = ev.center
-    var line = setClickedLine(x, y, true)
-    if (line) {
-        console.log(line)
+    if (getCurrMeme().lines.length && gTapedLineIdx) {
         changeXPos(ev.changedPointers[0].movementX)
         changeYPos(ev.changedPointers[0].movementY)
         renderCanvas()
     }
+
+}
+
+function onTextPress(ev) {
+    ev.preventDefault()
+    var { x, y } = ev.center
+    gTapedLineIdx = setClickedLine(x, y, true)
+    renderCanvas()
 }
 
 function onCanvasPinch(ev) {
     var diffX = ev.changedPointers[0].movementX + ev.changedPointers[1].movementX
     var diffY = ev.changedPointers[0].movementY + ev.changedPointers[1].movementY
     var diff = (diffX + diffY) / 2
+    console.log('pinched', diff)
     onChangeSize(diff)
 
 }
@@ -215,10 +241,13 @@ function drawRect(x, y, width, height) {
     gCtx.stroke()
     gCtx.fillStyle = '#00000020'
     gCtx.fillRect(x - 5, y + 5, width + 10, -height - 5)
+    gCtx.align = align
 }
 
 function onSaveMeme() {
+    drawImg(getCurrMeme(), true)
     saveMeme()
+
     renderMemes()
     document.querySelector('.editor-container').hidden = true
     document.querySelector('.bgc-container').hidden = true
@@ -240,4 +269,62 @@ function onGoTo(section, ev = null) {
 function onDownload(elLink) {
     drawImg(getCurrMeme(), true)
     downloadImg(elLink)
+}
+
+function onAlign(alignment) {
+    align(alignment)
+    renderCanvas()
+}
+
+function onImgInput(ev) {
+    loadImageFromInput(ev, editImg)
+}
+
+function loadImageFromInput(ev, onImageReady) {
+    var reader = new FileReader();
+
+    reader.onload = function(event) {
+        var img = new Image();
+        img.onload = onImageReady.bind(null, img)
+        img.src = event.target.result;
+    }
+    reader.readAsDataURL(ev.target.files[0]);
+}
+
+function onSearchByKey(elSpan) {
+    gkeysMap[elSpan.innerText] += 1
+    renderSearchBy()
+    renderImages(elSpan.innerText)
+}
+
+function uploadImg(elBtn, ev) {
+    var elForm = elBtn.parentElement
+    ev.preventDefault();
+    document.getElementById('imgData').value = gCanvas.toDataURL("image/jpeg");
+
+    // A function to be called if request succeeds
+    function onSuccess(uploadedImgUrl) {
+        uploadedImgUrl = encodeURIComponent(uploadedImgUrl)
+        document.querySelector('.share-meme').innerHTML = `
+        <a class="btn" href="https://www.facebook.com/sharer/sharer.php?u=${uploadedImgUrl}&t=${uploadedImgUrl}" title="Share on Facebook" target="_blank" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=${uploadedImgUrl}&t=${uploadedImgUrl}'); return false;">
+           facebook   
+        </a>`
+    }
+
+    doUploadImg(elForm, onSuccess);
+}
+
+function doUploadImg(elForm, onSuccess) {
+    var formData = new FormData(elForm);
+    fetch('http://ca-upload.com/here/upload.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(function(res) {
+            return res.text()
+        })
+        .then(onSuccess)
+        .catch(function(err) {
+            console.error(err)
+        })
 }

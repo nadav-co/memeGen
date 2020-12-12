@@ -27,20 +27,23 @@
         <div class="gallery-search main-layout"><input onkeyup="onSearch(this)" type="text" placeholder="Search" list="search"></div>
 
         <datalist id="search">
+    <option value="all">
     <option value="happy">
     <option value="sad">
     <option value="women">
     <option value="man">
     <option value="laugh">
+    <option value="animals">
   </datalist>
-
+        <div class="search-by main-layout flex space-between"></div>
         <div class="img-container flex center"></div>
+        <input class="file-input" type="file" name="image" onchange="onImgInput(event)" />
     </section>
     <section class="about" hidden>
         <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nihil vel, temporibus ea distinctio, nisi, perspiciatis tempore iste dignissimos tempora facere possimus. Officiis consequuntur culpa molestiae labore accusamus natus expedita eaque.</p>
     </section>
-    <section class="memes" hidden>
-        <div class="memes-container"></div>
+    <section class="memes main-layout" hidden>
+        <div class="memes-container img-container"></div>
     </section>
     <section class="editor-container" hidden>
         <button onclick="onBackToGallery()" class="back-to-gallery btn-clean">&#x3c; Back to Gallery</button>
@@ -75,9 +78,9 @@
                         <div class="main-actions flex space-between"><button onclick="onChangeSize(-1)" class="btn-clean text-size-down"></button>
                             <button onclick="onChangeSize(1)" class="btn-clean text-size-up"></button>
                             <div class="alignment">
-                                <button class="btn-clean text-align-left"></button>
-                                <button class="btn-clean text-align-center"></button>
-                                <button class="btn-clean text-align-right"></button>
+                                <button onclick="onAlign('left')" class="btn-clean text-align-left"></button>
+                                <button onclick="onAlign('center')" class="btn-clean text-align-center"></button>
+                                <button onclick="onAlign('right')" class="btn-clean text-align-right"></button>
                             </div>
 
                             <input class="btn-clean line-color" onchange="onChangeColor(this)" type="color" id="lineColor">
@@ -88,7 +91,8 @@
 
                     <div class="text-input"><input type="text" class="content-input" placeholder="input sentence"></div>
                     <div class="emoji-container flex col">
-                        <div class="flex space-between"><span>😘</span>
+                        <div class="flex space-between">
+                            <span onclick="onAddLine('😘')">😘</span>
                             <span onclick="onAddLine('❤️')">❤️</span>
                             <span onclick="onAddLine('😅')">😅</span>
                             <span onclick="onAddLine('😭')">😭</span>
@@ -121,14 +125,14 @@
                         </div>
                     </div>
                     <ul class="meme-btns clean-list flex space-between">
-                        <li class="save-meme flex center"><a href="#" onclick="onSaveMeme()">Save</a></li>
-                        <li class="share-meme flex center"><a href="#" onclick="onDownload(this)" download="meme.jpeg">Download</a></li>
-
+                        <li class="save-meme flex center"><span onclick="onSaveMeme()">Save</span></li>
+                        <li class="download-meme flex center"><a href="#" onclick="onDownload(this)" download="meme.jpeg">Download</a></li>
+                        <form action="" method="POST" enctype="multipart/form-data" onsubmit="uploadImg(this, event)">
+                            <a class="share-meme flex center" href="#" onclick="uploadImg(this, event)" download="meme.jpeg">Share</a>
+                            <input name="img" id="imgData" type="hidden" />
+                            <div class="share-container"></div>
+                        </form>
                     </ul>
-
-
-
-
 
                 </div>
             </div>
