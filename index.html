@@ -11,11 +11,11 @@
 
 <body onload="init()">
     <header class="flex space-between">
-        <img src="./icons/LOGO.png" alt="">
+        <img onclick="onGoTo('.gallery', event)" src="./icons/LOGO.png" alt="">
         <ul class="navbar clean-list flex center">
             <button class="btn-clean" onclick="onToggleMenu()">x</button>
             <li class="flex"><a onclick="onGoTo('.memes', event)" class="flex center" href="">Memes</a></li>
-            <li class="flex"><a onclick="onGoTo('.gallery', event)" class="flex center" href="">Gallery</a></li>
+            <li class="to-gallery flex active"><a onclick="onGoTo('.gallery', event)" class="flex center" href="">Gallery</a></li>
             <li class="flex"><a onclick="onGoTo('.about', event)" class="flex center" href="">About</a></li>
         </ul>
         <img onclick="onToggleMenu()" class="menu-btn" src="./icons/Shape-menu.svg" alt="">
@@ -37,13 +37,14 @@
   </datalist>
         <div class="search-by main-layout flex space-between"></div>
         <div class="img-container flex center"></div>
+        <h3>upload Image</h3>
         <input class="file-input" type="file" name="image" onchange="onImgInput(event)" />
     </section>
     <section class="about" hidden>
         <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nihil vel, temporibus ea distinctio, nisi, perspiciatis tempore iste dignissimos tempora facere possimus. Officiis consequuntur culpa molestiae labore accusamus natus expedita eaque.</p>
     </section>
     <section class="memes main-layout" hidden>
-        <div class="memes-container img-container"></div>
+        <div class="memes-container img-container flex center"></div>
     </section>
     <section class="editor-container" hidden>
         <button onclick="onBackToGallery()" class="back-to-gallery btn-clean">&#x3c; Back to Gallery</button>
@@ -89,7 +90,7 @@
                     </div>
 
 
-                    <div class="text-input"><input type="text" class="content-input" placeholder="input sentence"></div>
+                    <div class="text-input"><input onkeyup="onEnterInput(event)" type="text" class="content-input" placeholder="input sentence"></div>
                     <div class="emoji-container flex col">
                         <div class="flex space-between">
                             <span onclick="onAddLine('😘')">😘</span>

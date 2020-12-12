@@ -40,7 +40,7 @@ function renderSearchBy() {
 function renderImages(key = null) {
     var imgs = getImagesToRender(key)
     if (!imgs.length) return
-    var txtHTMLs = imgs.map(img => `<img onclick="editImg(${img.id})" src="${img.url}" alt="${img.keywords[0]}"></img>`)
+    var txtHTMLs = imgs.map(img => `<img onclick="editImg(${img.id})" src="${img.url}" alt="${img.keywords[1]}"></img>`)
     document.querySelector('.img-container').innerHTML = txtHTMLs.join('')
 }
 
@@ -96,6 +96,9 @@ function editMeme(idx) {
 
 
 function renderCanvas(meme = null) {
+    document.querySelector('.share-meme').innerText = 'Share'
+    var active = document.querySelector('.active')
+    if (active) active.classList.remove('active')
     if (!meme) meme = getCurrMeme()
     else setMeme(meme)
     drawImg(meme)
@@ -134,7 +137,11 @@ function drawText(line) {
 
 function onBackToGallery() {
     var isconfirmed = confirm('discard changes?')
-    if (isconfirmed) onGoTo('.gallery')
+    if (isconfirmed) {
+        onGoTo('.gallery')
+        document.querySelector('.to-gallery').classList.add('active')
+        renderImages()
+    }
 }
 
 function onChangeLine() {
@@ -145,9 +152,14 @@ function onChangeLine() {
 }
 
 function onAddLine(txt = null) {
-    if (!txt) txt = document.querySelector('.content-input').value
+    if (!txt) {
+        var elInput = document.querySelector('.content-input')
+        txt = elInput.value
+        elInput.value = ''
+    }
     var color = document.getElementById('lineColor').value
     var fill = document.getElementById('fillColor').value
+
     addLine(txt, color, fill)
     renderCanvas()
 }
@@ -255,7 +267,12 @@ function onSaveMeme() {
 }
 
 function onGoTo(section, ev = null) {
-    if (ev) ev.preventDefault()
+    if (ev) {
+        ev.preventDefault()
+        var active = document.querySelector('.active')
+        if (active) active.classList.remove('active')
+        ev.target.parentElement.classList.add('active')
+    }
     document.querySelector('.navbar').classList.remove('open')
     document.querySelector('.gallery').hidden = true
     document.querySelector('.about').hidden = true
@@ -327,4 +344,8 @@ function doUploadImg(elForm, onSuccess) {
         .catch(function(err) {
             console.error(err)
         })
+}
+
+function onEnterInput(ev) {
+    if (ev.key === 'Enter') onAddLine()
 }
