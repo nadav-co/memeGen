@@ -50,6 +50,7 @@ function renderMemes() {
 
 
 function editImg(id) {
+    document.querySelector('.header-content').classList.remove('main-layout')
     document.querySelector('.gallery').hidden = true
     document.querySelector('.memes').hidden = true
     document.querySelector('.about').hidden = true
@@ -65,6 +66,7 @@ function editMeme(idx) {
     document.querySelector('.memes').hidden = true
     document.querySelector('.about').hidden = true
     var meme = getMemes()[idx]
+    document.querySelector('.header-content').classList.remove('main-layout')
     renderCanvas(meme)
     document.querySelector('.editor-container').hidden = false
     document.querySelector('.bgc-container').hidden = false
@@ -238,6 +240,7 @@ function onSaveMeme() {
     saveMeme()
 
     renderMemes()
+    document.querySelector('.header-content').classList.add('main-layout')
     document.querySelector('.editor-container').hidden = true
     document.querySelector('.bgc-container').hidden = true
     document.querySelector('.memes').hidden = false
@@ -250,6 +253,7 @@ function onGoTo(section, ev = null) {
         if (active) active.classList.remove('active')
         ev.target.parentElement.classList.add('active')
     }
+    document.querySelector('.header-content').classList.add('main-layout')
     document.querySelector('.navbar').classList.remove('open')
     document.querySelector('.gallery').hidden = true
     document.querySelector('.about').hidden = true
@@ -294,7 +298,7 @@ function onSearchByKey(elSpan) {
 function uploadImg(elBtn, ev) {
     var elForm = elBtn.parentElement
     ev.preventDefault();
-    document.getElementById('imgData').value = gCanvas.toDataURL("image/jpeg");
+    document.getElementById('imgData').value = gCanvas.toDataURL('image/jpeg');
 
     // A function to be called if request succeeds
     function onSuccess(uploadedImgUrl) {
