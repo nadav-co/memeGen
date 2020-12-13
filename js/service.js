@@ -56,12 +56,17 @@ function getImgById(id) {
     return gImgs.find(img => img.id === id)
 }
 
-function createMeme(id) {
+function createMeme(id, height) {
     gMeme = {
         selectedImgId: id,
         selectedLineIdx: 0,
-        lines: []
+        lines: [
+            { txt: 'line 1', size: 30, align: 'left', isAligned: true, font: 'Impact', color: 'black', fill: 'white', x: 30, y: 30 },
+            { txt: 'line 2', size: 30, align: 'left', isAligned: true, font: 'Impact', color: 'black', fill: 'white', x: 30, y: height - 50 }
+        ]
     }
+    document.querySelector('.content-input').value = gMeme.lines[gMeme.selectedLineIdx].txt
+
 }
 
 function createMemeFromImg(img) {
@@ -90,9 +95,13 @@ function getLineNum() {
     return (gMeme.lines.length) ? `${gMeme.selectedLineIdx+1}/${gMeme.lines.length}` : '0/0'
 }
 
-function addLine(txt, color, fill) {
-    gMeme.lines.push({ txt, size: 30, align: 'left', isAligned: true, font: 'Impact', color, fill, x: 30, y: 30 })
+function addLine(txt = 'edit line') {
+    gMeme.lines.push({ txt, size: 30, align: 'left', isAligned: true, font: 'Impact', color: 'black', fill: 'white', x: 30, y: 40 * gMeme.lines.length - 1 })
     gMeme.selectedLineIdx = gMeme.lines.length - 1
+}
+
+function editLine(txt) {
+    gMeme.lines[gMeme.selectedLineIdx].txt = txt
 }
 
 function deleteLine() {
@@ -133,11 +142,7 @@ function changeXPos(diff) {
     }
 }
 
-function setClickedLine(x, y, touch = false) {
-    if (touch) {
-        x -= gMeme.offsetX
-        y -= gMeme.offsetY
-    }
+function setClickedLine(x, y) {
     const line = gMeme.lines.find(line => {
         switch (line.align) {
             case 'left':

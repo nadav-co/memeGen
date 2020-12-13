@@ -10,15 +10,16 @@
 </head>
 
 <body onload="init()">
-    <header class="flex space-between">
-        <img onclick="onGoTo('.gallery', event)" src="./icons/LOGO.png" alt="">
-        <ul class="navbar clean-list flex center">
-            <button class="btn-clean" onclick="onToggleMenu()">x</button>
-            <li class="flex"><a onclick="onGoTo('.memes', event)" class="flex center" href="">Memes</a></li>
-            <li class="to-gallery flex active"><a onclick="onGoTo('.gallery', event)" class="flex center" href="">Gallery</a></li>
-            <li class="flex"><a onclick="onGoTo('.about', event)" class="flex center" href="">About</a></li>
-        </ul>
-        <img onclick="onToggleMenu()" class="menu-btn" src="./icons/Shape-menu.svg" alt="">
+    <header class="">
+        <div class="header-contant flex space-between main-layout"><img onclick="onGoTo('.gallery', event)" src="./icons/LOGO.png" alt="">
+            <ul class="navbar clean-list flex center">
+                <button class="btn-clean" onclick="onToggleMenu()">x</button>
+                <li class="flex"><a onclick="onGoTo('.memes', event)" class="flex center" href="">Memes</a></li>
+                <li class="to-gallery flex active"><a onclick="onGoTo('.gallery', event)" class="flex center" href="">Gallery</a></li>
+                <li class="flex"><a onclick="onGoTo('.about', event)" class="flex center" href="">About</a></li>
+            </ul>
+            <img onclick="onToggleMenu()" class="menu-btn" src="./icons/Shape-menu.svg" alt=""></div>
+
     </header>
 
     <div class="bgc-container" hidden></div>
@@ -37,8 +38,9 @@
   </datalist>
         <div class="search-by main-layout flex space-between"></div>
         <div class="img-container flex center"></div>
-        <h3>upload Image</h3>
+        <h3>Upload Image</h3>
         <input class="file-input" type="file" name="image" onchange="onImgInput(event)" />
+
     </section>
     <section class="about" hidden>
         <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nihil vel, temporibus ea distinctio, nisi, perspiciatis tempore iste dignissimos tempora facere possimus. Officiis consequuntur culpa molestiae labore accusamus natus expedita eaque.</p>
@@ -50,17 +52,17 @@
         <button onclick="onBackToGallery()" class="back-to-gallery btn-clean">&#x3c; Back to Gallery</button>
         <div class="main-content flex">
             <div class="canvas-container flex">
-                <canvas onmousedown="onCanvasClicked(event)" onmousemove="onCanvasClicked(event)" onmouseup="onCanvasClicked(event)" height="400px" width="400px"></canvas>
+                <canvas ontouchstart="onCanvasClicked(event)" ontouchmove="onCanvasClicked(event)" ontouchend="onCanvasClicked(event)" onmousedown="onCanvasClicked(event)" onmousemove="onCanvasClicked(event)" onmouseup="onCanvasClicked(event)" height="400px" width="400px"></canvas>
             </div>
 
             <div class="control-box flex col center">
                 <h4 class="flex space-between"><span>Edit Text Lines</span>
-                    <small>
+                    <span>
                         <span class="line-number"></span>
-                        <button onclick="onChangeLine()" class="btn-clean switch-line"></button>
-                        <button onclick="onAddLine()" class="btn-clean add-line"></button>
-                        <button onclick="onDelete()" class="btn-clean delete-line"></button>
-                    </small>
+                    <button onclick="onChangeLine()" class="btn-clean switch-line"></button>
+                    <button onclick="onAddLine()" class="btn-clean add-line"></button>
+                    <button onclick="onDelete()" class="btn-clean delete-line"></button>
+                    </span>
                 </h4>
                 <div class="actions flex col space-between">
                     <div class="move-text flex center">
@@ -90,39 +92,39 @@
                     </div>
 
 
-                    <div class="text-input"><input onkeyup="onEnterInput(event)" type="text" class="content-input" placeholder="input sentence"></div>
+                    <div class="text-input"><input onkeyup="onEditLine(this)" type="text" class="content-input" placeholder="input sentence"></div>
                     <div class="emoji-container flex col">
                         <div class="flex space-between">
-                            <span onclick="onAddLine('😘')">😘</span>
-                            <span onclick="onAddLine('❤️')">❤️</span>
-                            <span onclick="onAddLine('😅')">😅</span>
-                            <span onclick="onAddLine('😭')">😭</span>
-                            <span onclick="onAddLine('🙏')">🙏</span>
-                            <span onclick="onAddLine('😄')">😄</span>
-                            <span onclick="onAddLine('😍')">😍</span>
-                            <span onclick="onAddLine('😓')">😓</span>
-                            <span onclick="onAddLine('🙄')">🙄</span>
-                            <span onclick="onAddLine('🖕')">🖕</span>
-                            <span onclick="onAddLine('😎')">😎</span>
-                            <span onclick="onAddLine('😂')">😂</span>
-                            <span onclick="onAddLine('🤬')">🤬</span>
-                            <span onclick="onAddLine('👺')">👺</span>
+                            <span onclick="onAddEmoji(this)">😘</span>
+                            <span onclick="onAddEmoji(this)">❤️</span>
+                            <span onclick="onAddEmoji(this)">😅</span>
+                            <span onclick="onAddEmoji(this)">😭</span>
+                            <span onclick="onAddEmoji(this)">🙏</span>
+                            <span onclick="onAddEmoji(this)">😄</span>
+                            <span onclick="onAddEmoji(this)">😍</span>
+                            <span onclick="onAddEmoji(this)">😓</span>
+                            <span onclick="onAddEmoji(this)">🙄</span>
+                            <span onclick="onAddEmoji(this)">🖕</span>
+                            <span onclick="onAddEmoji(this)">😎</span>
+                            <span onclick="onAddEmoji(this)">😂</span>
+                            <span onclick="onAddEmoji(this)">🤬</span>
+                            <span onclick="onAddEmoji(this)">👺</span>
                         </div>
                         <div class="flex space-between">
-                            <span onclick="onAddLine('😕')">😕</span>
-                            <span onclick="onAddLine('😊')">😊</span>
-                            <span onclick="onAddLine('🥳')">🥳</span>
-                            <span onclick="onAddLine('😒')">😒</span>
-                            <span onclick="onAddLine('💡')">💡</span>
-                            <span onclick="onAddLine('😢')">😢</span>
-                            <span onclick="onAddLine('👆')">👆</span>
-                            <span onclick="onAddLine('👌')">👌</span>
-                            <span onclick="onAddLine('😥')">😥</span>
-                            <span onclick="onAddLine('💣')">💣</span>
-                            <span onclick="onAddLine('🤧')">🤧</span>
-                            <span onclick="onAddLine('🤦‍♂️')">🤦‍♂️</span>
-                            <span onclick="onAddLine('😷')">😷</span>
-                            <span onclick="onAddLine('🔥')">🔥</span>
+                            <span onclick="onAddEmoji(this)">😕</span>
+                            <span onclick="onAddEmoji(this)">😊</span>
+                            <span onclick="onAddEmoji(this)">🥳</span>
+                            <span onclick="onAddEmoji(this)">😒</span>
+                            <span onclick="onAddEmoji(this)">💡</span>
+                            <span onclick="onAddEmoji(this)">😢</span>
+                            <span onclick="onAddEmoji(this)">👆</span>
+                            <span onclick="onAddEmoji(this)">👌</span>
+                            <span onclick="onAddEmoji(this)">😥</span>
+                            <span onclick="onAddEmoji(this)">💣</span>
+                            <span onclick="onAddEmoji(this)">🤧</span>
+                            <span onclick="onAddEmoji(this)">🤦‍♂️</span>
+                            <span onclick="onAddEmoji(this)">😷</span>
+                            <span onclick="onAddEmoji(this)">🔥</span>
                         </div>
                     </div>
                     <ul class="meme-btns clean-list flex space-between">

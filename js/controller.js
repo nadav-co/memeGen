@@ -5,6 +5,7 @@ var gCtx
 var gMouseDown = false
 var gTapedLineIdx
 var gkeysMap
+var gPrevTouch
 
 
 
@@ -15,16 +16,9 @@ function init() {
     renderMemes()
     gkeysMap = getSearchKeys()
     renderSearchBy()
-    var hammCanv = new Hammer(gCanvas)
-    hammCanv.on('pan', onTextPan)
-    hammCanv.get('pan').set({ direction: Hammer.DIRECTION_ALL })
-    hammCanv.add(new Hammer.Press({ event: 'press', time: 50 }))
-    hammCanv.on('press', onTextPress)
-    hammCanv.on('pinch', onCanvasPinch)
-    hammCanv.get('pinch').set({ enable: true });
-    var hammBody = new Hammer(document.body)
-    hammBody.add(new Hammer.Tap({ event: 'dubleTap', taps: 2 }))
-    hammBody.on("dubleTap", ev => ev.preventDefault())
+    var hammerDT = new Hammer(document.body)
+    hammerDT.add(new Hammer.Tap({ event: 'doubleTap', taps: 2 }))
+    hammerDT.on('doubleTap', ev => ev.preventDefault())
 
 }
 
@@ -54,30 +48,13 @@ function renderMemes() {
     elContainer.innerHTML = txtHTMLs.join('')
 }
 
-// function renderMeme(meme, idx) {
-//     var elContainer = document.querySelector('.memes-container')
-//     elContainer.innerHTML += `<canvas class="canvas-${idx}" onclick="editMeme(${idx})" height="150px" width="150px"></canvas>`
-//     let canvas = document.querySelector(`.canvas-${idx}`)
-//     let ctx = canvas.getContext('2d')
-//     var id = meme.selectedImgId
-//     var img = new Image();
-//     img.src = getImgById(id).url
-//     img.onload = () => {
-//         canvas.width = 150
-//         gCanvas.height = 150
-//         meme.offsetX = canvas.offsetLeft
-//         meme.offsetY = canvas.offsetTop
-//         ctx.drawImage(img, 0, 0, 150, 150)
-//         meme.lines.forEach(line => drawText(line))
-//     }
-// }
 
 function editImg(id) {
     document.querySelector('.gallery').hidden = true
     document.querySelector('.memes').hidden = true
     document.querySelector('.about').hidden = true
-    if (typeof(id) === 'number') createMeme(id)
-    else createMemeFromImg(id)
+    if (typeof(id) === 'number') createMeme(id, gCanvas.height)
+    else createMemeFromImg(id, gCanvas.height)
     renderCanvas()
     document.querySelector('.editor-container').hidden = false
     document.querySelector('.bgc-container').hidden = false
@@ -149,23 +126,29 @@ function onChangeLine() {
     var elLineSpan = document.querySelector('.line-number')
     var txt = getLineNum()
     elLineSpan.innerText = txt
+    document.querySelector('.content-input').value = getCurrMeme().lines[gMeme.selectedLineIdx].txt
+    renderCanvas()
 }
 
-function onAddLine(txt = null) {
-    if (!txt) {
-        var elInput = document.querySelector('.content-input')
-        txt = elInput.value
-        elInput.value = ''
-    }
-    var color = document.getElementById('lineColor').value
-    var fill = document.getElementById('fillColor').value
+function onAddLine() {
+    addLine()
+    renderCanvas()
+}
 
-    addLine(txt, color, fill)
+function onEditLine(elTxt) {
+    editLine(elTxt.value)
+    renderCanvas()
+}
+
+function onAddEmoji(emoji) {
+    addLine(emoji.innerText)
+    document.querySelector('.content-input').value = getCurrMeme().lines[gMeme.selectedLineIdx].txt
     renderCanvas()
 }
 
 function onDelete() {
     deleteLine()
+    document.querySelector('.content-input').value = getCurrMeme().lines[gMeme.selectedLineIdx].txt
     renderCanvas()
 }
 
@@ -203,47 +186,41 @@ function onSearch(elinput) {
 }
 
 function onCanvasClicked(ev) {
-    return
-    //     if (ev.type === 'mousedown') {
-    //         gMouseDown = true
-    //         var isLine = setClickedLine(ev.offsetX, ev.offsetY)
-    //         if (!isLine) gMouseDown = false
-
-    //     }
-    //     if (ev.type === 'mouseup') {
-    //         gMouseDown = false
-    //     }
-    //     if (gMouseDown) {
-    //         changeXPos(ev.movementX)
-    //         changeYPos(ev.movementY)
-    //         renderCanvas()
-    //     }
-}
-
-function onTextPan(ev) {
     ev.preventDefault()
-    if (getCurrMeme().lines.length && gTapedLineIdx) {
-        changeXPos(ev.changedPointers[0].movementX)
-        changeYPos(ev.changedPointers[0].movementY)
-        renderCanvas()
+    if (ev.type === 'mousedown') {
+        gMouseDown = true
+        var isLine = setClickedLine(ev.offsetX, ev.offsetY)
+        if (!isLine) gMouseDown = false
+        else document.querySelector('.content-input').value = getCurrMeme().lines[gMeme.selectedLineIdx].txt
+    }
+    if ((ev.type === 'touchstart')) {
+        gMouseDown = true
+        var x = ev.targetTouches[0].pageX - ev.target.offsetLeft
+        var y = ev.targetTouches[0].pageY - ev.target.offsetTop
+        gPrevTouch = { x, y }
+        var isLine = setClickedLine(x, y)
+        if (!isLine) gMouseDown = false
+        else document.querySelector('.content-input').value = getCurrMeme().lines[gMeme.selectedLineIdx].txt
+        return
     }
 
-}
+    if (ev.type === 'mouseup' || ev.type === 'touchend') {
+        gMouseDown = false
+    }
 
-function onTextPress(ev) {
-    ev.preventDefault()
-    var { x, y } = ev.center
-    gTapedLineIdx = setClickedLine(x, y, true)
-    renderCanvas()
-}
-
-function onCanvasPinch(ev) {
-    var diffX = ev.changedPointers[0].movementX + ev.changedPointers[1].movementX
-    var diffY = ev.changedPointers[0].movementY + ev.changedPointers[1].movementY
-    var diff = (diffX + diffY) / 2
-    console.log('pinched', diff)
-    onChangeSize(diff)
-
+    if (gMouseDown) {
+        if (ev.type === 'touchmove') {
+            var x = ev.targetTouches[0].pageX - ev.target.offsetLeft
+            var y = ev.targetTouches[0].pageY - ev.target.offsetTop
+            changeXPos(x - gPrevTouch.x)
+            changeYPos(y - gPrevTouch.y)
+            gPrevTouch = { x, y }
+        } else {
+            changeXPos(ev.movementX)
+            changeYPos(ev.movementY)
+        }
+        renderCanvas()
+    }
 }
 
 function drawRect(x, y, width, height) {
